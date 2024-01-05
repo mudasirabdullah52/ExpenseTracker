@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Expense</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+</head>
+<header id="navbar" class="bg-primary text-white text-center py-2">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" id="navBeforeLogin">
+        <a class="navbar-brand" href="#">Expense Tracker</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav" id="ul">
+                <li class="nav-item">
+                    <a class="nav-link" href="/expense/MainDashboard" id="home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/expense/expenseMain" id="expense">Add Expenses</a>
+                </li>
+                <li class="nav-item">
+                    <a id="rzp-button1" class="btn">Buy Premium</a>
+                </li>
+                <li class="nav-item">
+                    <a id="leaderboard" class="btn"></a>
+                </li>
+                <li class="nav-item">
+                    <a id="PremiumDiv" class="btn"></a>
+                </li>
+            </ul>
+
+            <!-- <div id="">
+            </div> -->
+            <button class="btn btn-danger ms-2" onclick="signOut()">
+                <i class="fa fa-sign-out" aria-hidden="true"></i>
+                Logout
+            </button>
+        </div>
+    </nav>
+</header>
+
+<body>
+    <div class="container p-3">
+        <form class="d-flex justify-content-center " id="createForm">
+            <div class="form-group me-2 ">
+                <label for="amount">Amount</label>
+                <input type="number" class="form-control " id="amount">
+            </div>
+            <div class="form-group me-2">
+                <label for="description">Description</label>
+                <input type="text" class="form-control" id="description">
+            </div>
+            <div class="form-group me-2">
+                <label for="category">Category:</label>
+                <select class="form-control" id="category">
+                    <option>Mobile</option>
+                    <option>Fan</option>
+                    <option>Computer</option>
+                    <option>Chair</option>
+                </select>
+            </div>
+            <div class="d-flex align-items-center">
+                <button type="submit" class="btn  btn-primary ms-2">Submit</button>
+            </div>
+            <!-- <button type="submit" class="btn btn-primary ms-2">Submit</button> -->
+        </form>
+        <h4>list of expenses</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Amount</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>edit</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody id="tableList">
+
+
+            </tbody>
+        </table>
+    </div>
+
+</body>
+<script>
+    function showPremiumuserMessage() {
+        // document.getElementById('rzp-button1').style.visibility = "hidden"
+        document.getElementById('rzp-button1').remove()
+        document.getElementById('PremiumDiv').innerHTML = "You are a premium user "
+        document.getElementById('leaderboard').innerHTML = "Leader Board"
+    }
+
+    window.addEventListener("DOMContentLoaded", (event) => {
+        event.preventDefault();
+        const token = localStorage.getItem('token');
+        const decodeToken = parseJwt(token)
+        const isPremium = decodeToken.isPremium
+        console.log(isPremium)
+        if (isPremium) {
+            showPremiumuserMessage()
+            // showLeaderboard()
+        }
+        const data = axios.get("/expense/read", { headers: { "Authorization": token } })
+            .then((response) => {
+                for (var i = 0; i < response.data.length; i++) {
+
+                    showOnDisplay(response.data[i]);
+
+                }
+                console.log(response.data);
+            })
+            .catch((err) => console.log(err))
+    })
+    function parseJwt(token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        return JSON.parse(jsonPayload);
+    }
+    // nnnnnnnnnnnnnnnnnn
+    function showOnDisplay(obj) {
+        const tableData = document.getElementById('tableList');
+        // create  edit button button 
+        const editBtn = document.createElement('button');
+        editBtn.className = 'btn btn-primary btn-sm edit';
+        const span = document.createElement('span');
+        span.className = 'glyphicon glyphicon-pencil'
+        editBtn.appendChild(span)
+        // create delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn btn-danger btn-sm delete';
+        const spans = document.createElement('span');
+        spans.className = 'glyphicon glyphicon-trash'
+        deleteBtn.appendChild(spans)
+
+        console.log(tableData);
+        // create row 
+        const row = document.createElement("tr");
+        // create cells 
+        const cell1 = document.createElement("td");
+        const cell2 = document.createElement("td");
+        const cell3 = document.createElement("td");
+        const cell4 = document.createElement("td");
+        const cell5 = document.createElement("td");
+        // attach data to cells 
+        const cellText1 = document.createTextNode(`${obj.expenseamount}`);
+        const cellText2 = document.createTextNode(`${obj.description}`);
+        const cellText3 = document.createTextNode(`${obj.category}`);
+        cell1.appendChild(cellText1);
+        cell2.appendChild(cellText2);
+        cell3.appendChild(cellText3);
+        cell4.appendChild(editBtn);
+        cell5.appendChild(deleteBtn);
+        // attach cells to rows 
+        row.appendChild(cell1);
+        row.appendChild(cell2);
+        row.appendChild(cell3);
+        row.appendChild(cell4);
+        row.appendChild(cell5);
+        console.log(row);
+        tableData.appendChild(row);
+
+
+        deleteBtn.onclick = () => {
+            const id = obj.id;
+            console.log(id);
+            const token = localStorage.getItem('token');
+            const response = axios.delete(`/expense/delete/${id}`, { headers: { "Authorization": token } })
+                .then((response) => {
+                    // showOnDisplay(response.data)
+                    console.log(response);
+
+                })
+                .catch((err) => console.log(err))
+
+            tableData.removeChild(row);
+        }
+
+        // editBtn.onclick = () => {
+        //     const id = obj._id;
+        //     console.log(id);
+        //     document.getElementById('name').value = obj.name;
+        //     document.getElementById('email').value = obj.email;
+        //     document.getElementById('phone').value = obj.phone;
+        //     axios.delete(`http://localhost:3000/delete/${id}`)
+        //         .then((response) => {
+        //             console.log(response);
+        //         })
+        //         .catch((err) => console.log(err))
+        //     usersdata.removeChild(li);
+
+        // }
+
+
+    }
+
+
+    document.getElementById('createForm').addEventListener('submit', async function (event) {
+        // event.preventDefault();
+        // get value for the form 
+        const amount = document.getElementById('amount').value;
+        const description = document.getElementById('description').value;
+        const category = document.getElementById('category').value;
+        console.log(amount, description, category);
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post('/expense/create', { amount, description, category }, { headers: { "Authorization": token } });
+            alert("data successfuly added ");
+        } catch (error) {
+            console.log(error);
+            alert('Error in adding the expenses');
+        }
+    });
+
+
+</script>
+<script src="../js/script.js"></script>
+<script src="../js/expenseMain.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>

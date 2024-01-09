@@ -1,11 +1,12 @@
 const Razorpay = require('razorpay');
+
 const Order = require('../Models/orderModel')
 // const User = require('../Models/userModel')
 const userController = require('./usersController')
 
 
 exports.purchasepremium = async (req, res) => {
-    console.log(process.env.RAZORPAY_KEY_ID)
+    // console.log(process.env.RAZORPAY_KEY_ID)
     try {
         var rzp = new Razorpay({
             key_id: process.env.RAZORPAY_KEY_ID,

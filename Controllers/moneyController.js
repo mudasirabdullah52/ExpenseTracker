@@ -40,13 +40,33 @@ exports.postExpenses = async (req, res) => {
 
 };
 exports.getExpense = async (req, res) => {
+    const limit = +req.query.rows || 5;
+    let totalItems;
     try {
-        const expenses = await Expense.findAll({ where: { UserId: req.user.id } });
-        res.json(expenses);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
+        const page = +req.query.page || 1;
+        const id = req.user.id;
+        totalItems = await Expense.count({ where: { UserId: id } });
+        const result = await Expense.findAll({ where: { UserId: id }, offset: (page - 1) * limit, limit: limit });
+        res.status(200).json({
+            result,
+            currentPage: page,
+            hasNextPage: limit * page < totalItems,
+            nextPage: page + 1,
+            hasPreviousPage: page > 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalItems / limit)
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Internal Server Error' });
+        console.log(err);
     }
+    // try {
+    //     const expenses = await Expense.findAll({ where: { UserId: req.user.id } });
+    //     res.json(expenses);
+    // } catch (error) {
+    //     console.error(error);
+    //     res.status(500).send('Internal Server Error');
+    // }
 }
 
 exports.deleteExpense = async (req, res) => {

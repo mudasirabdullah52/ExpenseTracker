@@ -40,6 +40,7 @@ if (btnSubmit) {
 if (forgotBtn) {
     forgotBtn.addEventListener('click', async (e) => {
         const emailId = document.getElementById('EmailId').value;
+        console.log(emailId)
         if (emailId == '') {
             await displayNotification('Please Enter Valid Email Address!', 'warning', divAlert);
         } else {

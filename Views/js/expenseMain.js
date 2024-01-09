@@ -1,5 +1,4 @@
 const showLeader = document.getElementById('leaderboard');
-
 showLeader.addEventListener('click', async (e) => {
     e.preventDefault();
     window.location.href = '/premium/leaderBoard';

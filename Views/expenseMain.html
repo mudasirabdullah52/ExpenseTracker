@@ -85,14 +85,26 @@
                 </tr>
             </thead>
             <tbody id="tableList">
-
-
             </tbody>
         </table>
+        <div id="paginationDiv" class="container text-center">buttons</div>
+        <div class="container mt-3 ">
+            <label for="rowsPerPage" class="form-label">Rows per Page:</label>
+            <select id="rowsPerPage" style="width: 3rem;" class="form-select">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+            </select>
+        </div>
     </div>
 
 </body>
 <script>
+    const PaginationDiv = document.getElementById('paginationDiv');
+    const rowsPerPageSelect = document.getElementById("rowsPerPage");
+    const token = localStorage.getItem('token');
+    let rowsPerPage = localStorage.getItem('rowsperpage') != null ? localStorage.getItem('rowsperpage') : 5;
     function showPremiumuserMessage() {
         // document.getElementById('rzp-button1').style.visibility = "hidden"
         document.getElementById('rzp-button1').remove()
@@ -102,25 +114,40 @@
 
     window.addEventListener("DOMContentLoaded", (event) => {
         event.preventDefault();
-        const token = localStorage.getItem('token');
         const decodeToken = parseJwt(token)
         const isPremium = decodeToken.isPremium
         console.log(isPremium)
         if (isPremium) {
             showPremiumuserMessage()
-            // showLeaderboard()
         }
-        const data = axios.get("/expense/read", { headers: { "Authorization": token } })
-            .then((response) => {
-                for (var i = 0; i < response.data.length; i++) {
 
-                    showOnDisplay(response.data[i]);
+        rowsPerPageSelect.addEventListener("change", function () {
+            rowsPerPage = parseInt(rowsPerPageSelect.value);
+            localStorage.setItem('rowsperpage', rowsPerPage)
+            fetchData(rowsPerPage, 1);
+        });
+        rowsPerPageSelect.value = rowsPerPage;
+        fetchData(rowsPerPage, 1);
 
-                }
-                console.log(response.data);
-            })
-            .catch((err) => console.log(err))
     })
+    async function fetchData(rowsPerPage, page) {
+
+        const result = await axios.get(`/expense/read?page=${page}&rows=${rowsPerPage}`, { headers: { "Authorization": token } })
+        if (result.data.result.length > 0) {
+            showPagination(result.data);
+            console.log(result.data.result)
+        }
+
+        for (var i = 0; i < result.data.result.length; i++) {
+            // console.log(result.data.result[i])
+            showOnDisplay(result.data.result[i]);
+
+        }
+        console.log(result.data);
+
+        // .catch((err) => console.log(err))
+    }
+
     function parseJwt(token) {
         var base64Url = token.split('.')[1];
         var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -207,7 +234,6 @@
 
     }
 
-
     document.getElementById('createForm').addEventListener('submit', async function (event) {
         // event.preventDefault();
         // get value for the form 
@@ -225,6 +251,33 @@
         }
     });
 
+
+    function showPagination({
+        currentPage,
+        hasNextPage,
+        nextPage,
+        hasPreviousPage,
+        previousPage,
+        lastPage,
+    }) {
+        PaginationDiv.innerHTML = '';
+        if (hasPreviousPage) {
+            const btn2 = document.createElement('button');
+            btn2.innerHTML = previousPage;
+            btn2.addEventListener('click', () => (fetchData(rowsPerPage, previousPage)));
+            PaginationDiv.appendChild(btn2)
+        }
+        const btn1 = document.createElement('button');
+        btn1.innerHTML = `${currentPage}`;
+        btn1.addEventListener('click', () => (fetchData(rowsPerPage, currentPage)));
+        PaginationDiv.appendChild(btn1);
+        if (hasNextPage) {
+            const btn3 = document.createElement('button');
+            btn3.innerHTML = nextPage;
+            btn3.addEventListener('click', () => (fetchData(rowsPerPage, nextPage)));
+            PaginationDiv.appendChild(btn3)
+        }
+    }
 
 </script>
 <script src="../js/script.js"></script>

@@ -5,4 +5,7 @@ userRoute.get("/login", userController.getLoginPage);
 userRoute.get('/register', userController.getRegistrationPage);
 userRoute.post('/addUser', userController.postRegistrationData);
 userRoute.post('/check-login', userController.checkLogin);
+userRoute.post('/SendforgetPasswordLink', userController.SendforgetPasswordLink);
+userRoute.get('/forgetPassword/:id', userController.getForgetPasswordPage);
+userRoute.post('/updatePasswordData', userController.updatePasswordData);
 module.exports = userRoute;

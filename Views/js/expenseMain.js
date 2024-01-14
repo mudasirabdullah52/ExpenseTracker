@@ -60,6 +60,33 @@ document.getElementById('rzp-button1').onclick = async function (e) {
         alert('Something went wrong')
     });
 }
+
+
+if (updateBtn) {
+    updateBtn.addEventListener('click', async (e) => {
+        const id = document.getElementById('updateId').value;
+        const amount = document.getElementById('updateAmount').value;
+        const description = document.getElementById('updateDescription').value;
+        const category = document.getElementById('updateCategory').value;
+        console.log(id, amount, description, category);
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.put('/expense/update', { id, amount, description, category }, { headers: { "Authorization": token } });
+            if (response.data.message == 'success') {
+                $('#updateModel').modal('hide');
+                await displayNotification('Expense Updated Successfully!', 'success', divAlert);
+                window.location.reload();
+            }
+        } catch (error) {
+            console.log(error);
+            $('#updateModel').modal('hide');
+            await displayNotification("Internal Server Error!", 'danger', divAlert);
+
+        }
+
+    })
+}
 function displayNotification(message, type, container) {
     return new Promise((resolve) => {
         const notificationDiv = document.createElement('div');

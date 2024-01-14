@@ -126,4 +126,33 @@ exports.deleteExpense = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 }
+exports.updateExpense = async (req, res) => {
+    const { id, amount, description, category } = req.body;
+    console.log(req.body)
+    const rowdata = await Expense.findOne({ where: { id: id } })
+    let totalExpense = parseInt(req.user.totalExpense) - parseInt(rowdata.expenseamount)
+    console.log(totalExpense, "this is expenxe amuunt")
+    totalExpense += parseInt(amount);
+
+    try {
+        await Expense.update({
+            expenseamount: amount,
+            description: description,
+            category: category,
+            // UserId: req.user.id
+
+        }, { where: { id: id } })
+
+        await User.update({ totalExpense: totalExpense }, { where: { id: req.user.id } })
+        res.status(201).json({ message: 'success' });
+
+    } catch (err) {
+        if (err.name === 'SequelizeUniqueConstraintError') {
+            res.status(409).json({ message: 'exist' });
+        } else {
+            console.error(err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    }
+}
 

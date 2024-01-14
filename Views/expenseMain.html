@@ -105,12 +105,48 @@
         </div>
     </div>
 
+
+    <div class="modal" id="updateModel" tabindex="-3" aria-hidden="true" data-mdb-backdrop="true"
+        data-mdb-keyboard="true">
+        <div class="modal-dialog" style="width: auto;">
+            <div class="modal-content text-center">
+                <div class="modal-header h5 text-white bg-primary justify-content-center">
+                    Update Expenses
+                </div>
+                <div class="modal-body px-5">
+                    <input type="number" id="updateId" value="1" class="form-control my-3" name="id" hidden required />
+                    <div class="form-outline">
+                        <label class="form-label" for="updateAmount">Amount:</label>
+                        <input type="number" id="updateAmount" class="form-control my-3" name="updateAmount" required />
+                    </div>
+                    <div class="form-outline">
+                        <label class="form-label" for="updateDescription">Discription:</label>
+                        <input type="email" id="updateDescription" class="form-control my-3" name="updateDescription"
+                            required />
+                    </div>
+                    <div class="form-outline">
+                        <label for="updateCategory">Category:</label>
+                        <select class="form-control my-3" id="updateCategory" name="updateCategory">
+                            <option>Mobile</option>
+                            <option>Fan</option>
+                            <option>Computer</option>
+                            <option>Chair</option>
+                        </select>
+                    </div>
+                    <button type="button" id="updateBtn" class="btn btn-primary w-100">update</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 <script>
     const PaginationDiv = document.getElementById('paginationDiv');
     const rowsPerPageSelect = document.getElementById("rowsPerPage");
     const token = localStorage.getItem('token');
     let rowsPerPage = localStorage.getItem('rowsperpage') != null ? localStorage.getItem('rowsperpage') : 5;
+
     function showPremiumuserMessage() {
         // document.getElementById('rzp-button1').style.visibility = "hidden"
         document.getElementById('rzp-button1').remove()
@@ -222,23 +258,19 @@
             tableData.removeChild(row);
         }
 
-        // editBtn.onclick = () => {
-        //     const id = obj._id;
-        //     console.log(id);
-        //     document.getElementById('name').value = obj.name;
-        //     document.getElementById('email').value = obj.email;
-        //     document.getElementById('phone').value = obj.phone;
-        //     axios.delete(`http://localhost:3000/delete/${id}`)
-        //         .then((response) => {
-        //             console.log(response);
-        //         })
-        //         .catch((err) => console.log(err))
-        //     usersdata.removeChild(li);
+        editBtn.onclick = (event) => {
+            const id = obj.id;
+            console.log(id);
 
-        // }
+            const val = document.getElementById('updateId')
+            val.value = id
+            $('#updateModel').modal('show');
 
+
+        }
 
     }
+
 
     document.getElementById('createForm').addEventListener('submit', async function (event) {
         // event.preventDefault();

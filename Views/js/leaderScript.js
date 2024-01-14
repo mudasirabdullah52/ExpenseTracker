@@ -15,7 +15,7 @@ window.addEventListener("DOMContentLoaded", async (event) => {
         showPremiumuserMessage()
         // showLeaderboard()
     }
-    const userLeaderBoardArray = await axios.get('http://localhost:3000/premium/showLeaderBoard', { headers: { "Authorization": token } })
+    const userLeaderBoardArray = await axios.get('/premium/showLeaderBoard', { headers: { "Authorization": token } })
     console.log(userLeaderBoardArray)
     userLeaderBoardArray.data.forEach((userDetails) => {
 

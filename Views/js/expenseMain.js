@@ -23,7 +23,7 @@ showLeader.addEventListener('click', async (e) => {
 
 document.getElementById('rzp-button1').onclick = async function (e) {
     const token = localStorage.getItem('token')
-    const response = await axios.get('http://localhost:3000/order/premiummembership', { headers: { "Authorization": token } });
+    const response = await axios.get('/order/premiummembership', { headers: { "Authorization": token } });
     console.log(response);
     var options =
     {
@@ -31,7 +31,7 @@ document.getElementById('rzp-button1').onclick = async function (e) {
         "order_id": response.data.order.id,// For one time payment
         // This handler function will handle the success payment
         "handler": async function (response) {
-            const res = await axios.post('http://localhost:3000/order/updatetransactionstatus', {
+            const res = await axios.post('/order/updatetransactionstatus', {
                 order_id: options.order_id,
                 payment_id: response.razorpay_payment_id,
             }, { headers: { "Authorization": token } })

@@ -112,7 +112,7 @@ exports.SendforgetPasswordLink = async (req, res) => {
                 text: 'Text content of your email',
                 html: `<p><b>Hi ${user.name}</b> </br> You have got the reset password request from 
                 you if you want to rest the password please click on the given link </br>
-                <a href="http://localhost:3000/user/forgetPassword/${id}">click</a>  </p> `,
+                <a href="https://dark-gray-prawn-sari.cyclic.app/user/forgetPassword/${id}">click</a>  </p> `,
             };
 
             // Send email

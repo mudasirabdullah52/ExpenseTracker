@@ -2,6 +2,10 @@ const path = require('path');
 const Expense = require('../Models/expensesModel');
 const User = require('../Models/userModel');
 const sequelize = require('../dbConnection');
+const PDFDocument = require('pdfkit');
+// const exceljs = require('exceljs');
+const xlsx = require('xlsx');
+const fs = require('fs');
 
 exports.getExpenseMainHomePage = (req, res) => {
     res.sendFile(path.join(__dirname, '..', "Views", "mainDashboard.html"));
@@ -67,6 +71,41 @@ exports.getExpense = async (req, res) => {
     //     console.error(error);
     //     res.status(500).send('Internal Server Error');
     // }
+}
+
+exports.downloadUserData = async (req, res) => {
+    try {
+        const result = await Expense.findAll({ where: { UserId: req.user.id } });
+        // let response = result[0];
+        // console.log(result)
+        // let response = [
+        //     { id: 1, name: 'John Doe', email: 'john@example.com' },
+        //     { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
+
+        // ];
+
+        const response = JSON.parse(JSON.stringify(result));
+        // // const response = result.map(expense => [expense.expenseamount, expense.category, expense.description]);
+        var date = new Date().toJSON();
+        let text = req.user.name + date
+        text = text.replaceAll(":", '-');
+        text = text.replaceAll(".", '-');
+
+        console.log(text)
+
+        let workbook = xlsx.utils.book_new()
+        let worksheet = xlsx.utils.json_to_sheet(response);
+        xlsx.utils.book_append_sheet(workbook, worksheet, 'Exp');
+        xlsx.writeFile(workbook, `C:\\Users\\hp\\Desktop\\ExpenseData\\${text}.xlsx`);
+        res.status(201).json({ message: 'success' });
+        // console.log(response)
+
+
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
 }
 
 exports.deleteExpense = async (req, res) => {

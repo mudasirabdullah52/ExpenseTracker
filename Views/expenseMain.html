@@ -50,6 +50,7 @@
 
 <body>
     <div class="container p-3">
+        <div class="position-absolute top-0 end-0" id="div-alert"></div>
         <form class="d-flex justify-content-center " id="createForm">
             <div class="form-group me-2 ">
                 <label for="amount">Amount</label>
@@ -71,9 +72,14 @@
             <div class="d-flex align-items-center">
                 <button type="submit" class="btn  btn-primary ms-2">Submit</button>
             </div>
+
             <!-- <button type="submit" class="btn btn-primary ms-2">Submit</button> -->
         </form>
-        <h4>list of expenses</h4>
+        <div class="d-flex justify-content-between">
+            <h4>list of expenses</h4>
+            <button id="downloadBtn" class="btn btn-warning">Download Report</button>
+        </div>
+        <!-- <h4>list of expenses</h4> -->
         <table class="table table-striped">
             <thead>
                 <tr>

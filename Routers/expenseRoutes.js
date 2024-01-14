@@ -10,6 +10,7 @@ expenseRoutes.get('/expenseMain', moneyController.getExpenseMainPage);
 expenseRoutes.post('/create', authnticateUser.authenticate, moneyController.postExpenses);
 expenseRoutes.get('/read', authnticateUser.authenticate, moneyController.getExpense);
 expenseRoutes.delete('/delete/:id', authnticateUser.authenticate, moneyController.deleteExpense);
+expenseRoutes.get('/download', authnticateUser.authenticate, moneyController.downloadUserData);
 
 
 module.exports = expenseRoutes;

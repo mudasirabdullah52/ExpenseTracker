@@ -110,9 +110,11 @@ exports.SendforgetPasswordLink = async (req, res) => {
                 to: email,
                 subject: 'Reset Password',
                 text: 'Text content of your email',
-                html: `<p><b>Hi ${user.name}</b> </br> You have got the reset password request from 
+                html: `<b>Dear ${user.name}</b> </br>
+                <p>You have got the reset password request from 
                 you if you want to rest the password please click on the given link </br>
-                <a href="https://dark-gray-prawn-sari.cyclic.app/user/forgetPassword/${id}">click</a>  </p> `,
+                <a href="https://dark-gray-prawn-sari.cyclic.app/user/forgetPassword/${id}">click</a> 
+                </p> `,
             };
 
             // Send email
@@ -138,14 +140,14 @@ exports.getForgetPasswordPage = async (req, res) => {
         const id = req.params.id;
         const response = await forgetPasswordModel.findOne({ where: { id: id, isactive: 1 } });
         if (response) {
-            // const t = await sequelize.transaction();
+
             try {
-                // await response.update({ isactive: 0 }, { transaction: t });
+
                 await response.update({ isactive: 0 });
-                // await t.commit();
+
                 res.sendFile(path.join(__dirname, '..', "Views", "forgetPasswordPage.html"));
             } catch (error) {
-                // await t.rollback();
+
                 console.log(error);
                 res.status(500).json({ message: 'Internal Server Error' });
             }
@@ -160,13 +162,12 @@ exports.getForgetPasswordPage = async (req, res) => {
 exports.updatePasswordData = async (req, res) => {
     const id = req.body.id;
     const password = req.body.password;
-    // const date = formatDate(new Date().toLocaleDateString());
-    // const t = await sequelize.transaction();
     try {
         const response = await forgetPasswordModel.findOne({ where: { id: id } });
         const userId = response.UserId;
         const passWordHashed = await bcrypt.hash(password, 10);
-        await User.update({ passWord: passWordHashed }, { where: { id: userId } });
+        console.log("password", passWordHashed);
+        await User.update({ password: passWordHashed }, { where: { id: userId } });
         res.status(200).json({ message: 'Password updated successfully!' });
     } catch (error) {
         console.log(error);
